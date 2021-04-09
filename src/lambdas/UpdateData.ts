@@ -25,7 +25,7 @@ module.exports.handler = async (event) => {
     throw error;
   }
 
-  const parser = file.Body.pipe(parse({ columns: true, delimiter: ';' }));
+  const parser = file.Body.pipe(parse({ columns: true }));
 
   let items = [];
   let totalItems = 0;
@@ -56,7 +56,7 @@ async function batchWrite(items) {
           PutRequest: {
             Item: {
               PK: {
-                S: item.routing_number
+                S: item.routingnumber
               },
               name: {
                 S: item.name
