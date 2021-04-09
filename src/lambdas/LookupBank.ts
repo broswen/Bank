@@ -55,7 +55,8 @@ const lookupBank = async (event) => {
       {
         rn: data.Item.PK.S,
         name: data.Item.name.S,
-        location: data.Item.location.S
+        address1: data.Item.address1.S,
+        address2: data.Item.address2.S
       }
     ),
   };

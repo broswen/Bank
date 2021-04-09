@@ -61,8 +61,11 @@ async function batchWrite(items) {
               name: {
                 S: item.name
               },
-              location: {
-                S: item.location
+              address1: {
+                S: item.address1
+              },
+              address2: {
+                S: item.address2
               }
             }
           }
