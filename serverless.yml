@@ -1,6 +1,9 @@
 service: bank
 frameworkVersion: '2'
 
+plugins:
+  - serverless-plugin-typescript
+
 provider:
   name: aws
   runtime: nodejs12.x

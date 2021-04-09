@@ -1,10 +1,11 @@
 'use strict';
 
-const {DynamoDBClient, BatchWriteItemCommand} = require("@aws-sdk/client-dynamodb");
-const {S3Client, GetObjectCommand} = require("@aws-sdk/client-s3");
+import { BatchWriteItemCommand, BatchWriteItemInput, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
-const dynamoClient = new DynamoDBClient();
-const s3Client = new S3Client();
+
+const ddbClient: DynamoDBClient = new DynamoDBClient({});
+const s3Client: S3Client = new S3Client({});
 
 const parse = require('csv-parse');
 const { Readable } = require("stream");
@@ -24,7 +25,7 @@ module.exports.handler = async (event) => {
     throw error;
   }
 
-  const parser = file.Body.pipe(parse({columns: true, delimiter: ';'}));
+  const parser = file.Body.pipe(parse({ columns: true, delimiter: ';' }));
 
   let items = [];
   let totalItems = 0;
@@ -41,14 +42,14 @@ module.exports.handler = async (event) => {
 
   if (items) {
     await batchWrite(items);
-    totalItems+=items.length;
+    totalItems += items.length;
   }
   console.info(`Uploaded ${totalItems} to ${process.env.ROUTING_TABLE}`)
   return 'OK';
 };
 
-async function batchWrite(items){
-  let params = {
+async function batchWrite(items) {
+  let params: BatchWriteItemInput = {
     RequestItems: {
       [process.env.ROUTING_TABLE]: items.map(item => (
         {
@@ -69,6 +70,5 @@ async function batchWrite(items){
       ))
     }
   }
-  console.log(params);
-  await dynamoClient.send(new BatchWriteItemCommand(params));
+  await ddbClient.send(new BatchWriteItemCommand(params));
 }

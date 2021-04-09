@@ -1,7 +1,8 @@
 'use strict';
 
-const {DynamoDBClient, GetItemCommand} = require("@aws-sdk/client-dynamodb");
-const client = new DynamoDBClient();
+import { DynamoDBClient, GetItemCommand, GetItemCommandInput, GetItemCommandOutput } from "@aws-sdk/client-dynamodb";
+
+const ddbClient: DynamoDBClient = new DynamoDBClient({});
 
 const middy = require('@middy/core')
 
@@ -18,7 +19,7 @@ const inputSchema = {
     body: {
       type: 'object',
       properties: {
-        rn: { type: 'string', minLength: 8, maxLength: 9}
+        rn: { type: 'string', minLength: 9, maxLength: 9 }
       },
       required: ['rn']
     }
@@ -27,7 +28,7 @@ const inputSchema = {
 
 const lookupBank = async (event) => {
 
-  const params = {
+  const params: GetItemCommandInput = {
     TableName: process.env.ROUTING_TABLE,
     Key: {
       PK: {
@@ -36,16 +37,16 @@ const lookupBank = async (event) => {
     }
   }
 
-  let data;
-  try { 
-    data = await client.send(new GetItemCommand(params));
+  let data: GetItemCommandOutput;
+  try {
+    data = await ddbClient.send(new GetItemCommand(params));
   } catch (error) {
     console.error(error);
     throw createError(500, 'Routing Number lookup error');
   }
 
   if (data.Item === undefined) {
-    throw createError(404, 'bank not found');
+    throw createError(404, `Bank not found for routing number ${event.body.rn}`);
   }
 
   return {
@@ -60,7 +61,7 @@ const lookupBank = async (event) => {
   };
 };
 
-const logMiddleware = options => {
+const logMiddleware = () => {
 
   return {
     before: (handler, next) => {
@@ -76,8 +77,8 @@ const logMiddleware = options => {
 
 const handler = middy(lookupBank)
   .use(logMiddleware())
-  .use(jsonBodyParser()) 
-  .use(validator({inputSchema})) 
-  .use(httpErrorHandler()) 
+  .use(jsonBodyParser())
+  .use(validator({ inputSchema }))
+  .use(httpErrorHandler())
 
 module.exports = { handler }
