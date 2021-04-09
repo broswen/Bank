@@ -16,7 +16,7 @@ const { NotExtended } = require("http-errors");
 const inputSchema = {
   type: 'object',
   properties: {
-    body: {
+    pathParameters: {
       type: 'object',
       properties: {
         rn: { type: 'string', minLength: 9, maxLength: 9 }
@@ -32,7 +32,7 @@ const lookupBank = async (event) => {
     TableName: process.env.ROUTING_TABLE,
     Key: {
       PK: {
-        S: event.body.rn
+        S: event.pathParameters.rn
       }
     }
   }
@@ -46,7 +46,7 @@ const lookupBank = async (event) => {
   }
 
   if (data.Item === undefined) {
-    throw createError(404, `Bank not found for routing number ${event.body.rn}`);
+    throw createError(404, `Bank not found for routing number ${event.pathParameters.rn}`);
   }
 
   return {
@@ -54,9 +54,9 @@ const lookupBank = async (event) => {
     body: JSON.stringify(
       {
         rn: data.Item.PK.S,
-        name: data.Item.name.S,
-        address1: data.Item.address1.S,
-        address2: data.Item.address2.S
+        n: data.Item.name.S,
+        a1: data.Item.address1.S,
+        a2: data.Item.address2.S
       }
     ),
   };

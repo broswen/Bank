@@ -12,3 +12,4 @@ Automated lambda to download and update routing number database monthly.
 - [x] update database schema
 - [ ] add rate limiting
 - [ ] add custom authorizer with dynamodb clients
+- [ ] use GET with path params to allow for cacheing

@@ -42,8 +42,8 @@ functions:
     handler: src/lambdas/LookupBank.handler 
     events:
       - httpApi:
-          path: /bank
-          method: post
+          path: /bank/{rn}
+          method: get
   UpdateData:
     handler: src/lambdas/UpdateData.handler
     timeout: 10
