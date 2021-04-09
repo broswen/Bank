@@ -1,8 +1,7 @@
 'use strict';
 
-import { DynamoDBClient, GetItemCommand, GetItemCommandInput, GetItemCommandOutput } from "@aws-sdk/client-dynamodb";
-
-const ddbClient: DynamoDBClient = new DynamoDBClient({});
+import { GetItemCommandOutput } from "@aws-sdk/client-dynamodb";
+import { getBank } from "../utils/DynamoDBUtils";
 
 const middy = require('@middy/core')
 
@@ -28,18 +27,9 @@ const inputSchema = {
 
 const lookupBank = async (event) => {
 
-  const params: GetItemCommandInput = {
-    TableName: process.env.ROUTING_TABLE,
-    Key: {
-      PK: {
-        S: event.pathParameters.rn
-      }
-    }
-  }
-
   let data: GetItemCommandOutput;
   try {
-    data = await ddbClient.send(new GetItemCommand(params));
+    data = await getBank(event.pathParameters.rn)
   } catch (error) {
     console.error(error);
     throw createError(500, 'Routing Number lookup error');

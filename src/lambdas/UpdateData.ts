@@ -1,7 +1,8 @@
 'use strict';
 
-import { BatchWriteItemCommand, BatchWriteItemInput, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { batchWrite } from "../utils/DynamoDBUtils";
 
 
 const ddbClient: DynamoDBClient = new DynamoDBClient({});
@@ -27,7 +28,7 @@ module.exports.handler = async (event) => {
 
   const parser = file.Body.pipe(parse({ columns: true }));
 
-  let items = [];
+  let items: { routingnumber: string, name: string, address1: string, address2: string }[] = [];
   let totalItems = 0;
   for await (let item of parser) {
     console.log(item);
@@ -41,37 +42,14 @@ module.exports.handler = async (event) => {
   }
 
   if (items) {
-    await batchWrite(items);
+    try {
+      await batchWrite(items);
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
     totalItems += items.length;
   }
-  console.info(`Uploaded ${totalItems} to ${process.env.ROUTING_TABLE}`)
+  console.info(`Updated ${totalItems} banks in ${process.env.ROUTING_TABLE}`)
   return 'OK';
 };
-
-async function batchWrite(items) {
-  let params: BatchWriteItemInput = {
-    RequestItems: {
-      [process.env.ROUTING_TABLE]: items.map(item => (
-        {
-          PutRequest: {
-            Item: {
-              PK: {
-                S: item.routingnumber
-              },
-              name: {
-                S: item.name
-              },
-              address1: {
-                S: item.address1
-              },
-              address2: {
-                S: item.address2
-              }
-            }
-          }
-        }
-      ))
-    }
-  }
-  await ddbClient.send(new BatchWriteItemCommand(params));
-}

@@ -8,8 +8,8 @@ Automated lambda to download and update routing number database monthly.
 ## TODO List
 - [x] refactor project file locations
 - [x] convert to typescript
-- [ ] move database access functions to separate file
+- [x] move database access functions to separate file
 - [x] update database schema
-- [ ] add rate limiting
+- [x] add rate limiting
 - [ ] add custom authorizer with dynamodb clients
-- [ ] use GET with path params to allow for cacheing
+- [x] use GET with path params to allow for cacheing
