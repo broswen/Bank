@@ -11,6 +11,15 @@ provider:
   stage: dev
   region: us-east-1
 
+  httpApi:
+    authorizers:
+      ClientAuthorizer:
+        type: request
+        functionName: ClientAuthorizer
+        payloadVersion: '2.0'
+        enableSimpleResponses: true
+        identitySource: $request.header.Auth
+
   logs:
     httpApi: true
 
@@ -22,6 +31,7 @@ provider:
         - dynamodb:BatchWriteItem
       Resource:
         - !GetAtt RoutingTable.Arn
+        - !GetAtt ClientsTable.Arn
     - Effect: "Allow"
       Action:
         - s3:GetObject
@@ -33,6 +43,7 @@ provider:
   environment:
     ROUTING_TABLE: !Ref RoutingTable
     DATA_BUCKET: !Ref DataBucket
+    CLIENTSTABLE: !Ref ClientsTable
     FILE: rn.csv
 
 functions:
@@ -45,6 +56,15 @@ functions:
       - httpApi:
           path: /bank/{rn}
           method: get
+          authorizer:
+            name: ClientAuthorizer
+
+  ClientAuthorizer:
+    handler: src/lambdas/ClientAuthorizer.handler
+    timeout: 2
+    memorySize: 128
+    reservedConcurrency: 10
+
   UpdateData:
     handler: src/lambdas/UpdateData.handler
     timeout: 10
@@ -74,3 +94,15 @@ resources:
             KeyType: HASH
         TableName: ${self:service}-${self:provider.stage}-routing-table
         BillingMode: PAY_PER_REQUEST
+
+    ClientsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-clients-table
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
