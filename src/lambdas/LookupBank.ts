@@ -1,7 +1,11 @@
 'use strict';
 
-import { GetItemCommandOutput } from "@aws-sdk/client-dynamodb";
-import { getBank } from "../utils/DynamoDBUtils";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { Bank } from "../models/Bank";
+import { BankService } from "../services/BankService";
+import { BankServiceImpl } from "../services/BankServiceImpl";
+
+const bankService: BankService = new BankServiceImpl(new DynamoDBClient({}))
 
 const middy = require('@middy/core')
 
@@ -27,28 +31,21 @@ const inputSchema = {
 
 const lookupBank = async (event) => {
 
-  let data: GetItemCommandOutput;
+  let bank: Bank | null
   try {
-    data = await getBank(event.pathParameters.rn)
+    bank = await bankService.getBank(event.pathParameters.rn)
   } catch (error) {
     console.error(error);
-    throw createError(500, 'Routing Number lookup error');
+    throw createError(500)
   }
 
-  if (data.Item === undefined) {
-    throw createError(404, `Bank not found for routing number ${event.pathParameters.rn}`);
+  if (bank === null) {
+    throw createError(404)
   }
 
   return {
     statusCode: 200,
-    body: JSON.stringify(
-      {
-        rn: data.Item.PK.S,
-        n: data.Item.name.S,
-        a1: data.Item.address1.S,
-        a2: data.Item.address2.S
-      }
-    ),
+    body: JSON.stringify(bank)
   };
 };
 

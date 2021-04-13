@@ -24,7 +24,7 @@ Automated lambda to download and update routing number database monthly.
 ```
 
 
-## TODO List
+### TODO List
 - [x] refactor project file locations
 - [x] convert to typescript
 - [x] move database access functions to separate file
