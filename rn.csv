@@ -1,4 +1,4 @@
-routingnumber,name,address1,address2
+routingNumber,name,addressLine1,addressLine2
 000000001,"Test Bank","1234 Main Street","Extra Information"
 000000002,"XYZ Bank","ABC Street","Extra Information"
 000000003,"Snow Bank","South Pole","Extra Information"
