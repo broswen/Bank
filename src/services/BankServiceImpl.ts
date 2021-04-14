@@ -1,6 +1,8 @@
 import { BatchWriteItemCommand, BatchWriteItemCommandInput, BatchWriteItemCommandOutput, DynamoDBClient, GetItemCommand, GetItemCommandInput, GetItemCommandOutput, PutItemCommand, PutItemCommandInput, PutItemCommandOutput } from "@aws-sdk/client-dynamodb";
 import { Bank } from "../models/Bank";
+import { BankNotFoundError } from "../models/BankNotFoundError";
 import { BankService } from "./BankService";
+
 
 export class BankServiceImpl implements BankService {
 
@@ -10,7 +12,7 @@ export class BankServiceImpl implements BankService {
         this.ddbClient = ddbClient
     }
 
-    async getBank(routingNumber: string): Promise<Bank | null> {
+    async getBank(routingNumber: string): Promise<Bank> {
         const params: GetItemCommandInput = {
             TableName: process.env.ROUTING_TABLE,
             Key: {
@@ -28,7 +30,7 @@ export class BankServiceImpl implements BankService {
         }
 
         if (data.Item === undefined) {
-            return null
+            throw new BankNotFoundError()
         }
 
         return {

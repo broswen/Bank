@@ -2,6 +2,7 @@
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { Bank } from "../models/Bank";
+import { BankNotFoundError } from "../models/BankNotFoundError";
 import { BankService } from "../services/BankService";
 import { BankServiceImpl } from "../services/BankServiceImpl";
 
@@ -36,11 +37,12 @@ const lookupBank = async (event) => {
     bank = await bankService.getBank(event.pathParameters.rn)
   } catch (error) {
     console.error(error);
-    throw createError(500)
-  }
 
-  if (bank === null) {
-    throw createError(404)
+    if (error instanceof BankNotFoundError) {
+      throw createError(404)
+    }
+
+    throw createError(500)
   }
 
   return {
