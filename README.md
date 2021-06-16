@@ -26,10 +26,12 @@ Automated Lambda to load routing number data from CSV into DynamoDB table.
 ### Call the API
 
 1. Call the API with path parameters for the 3 letter country code and 9 digit bank routing number.
+
+   Pass the client id as the `Auth` header to be authenticated.
 ```
 https://endpoint/{country code}/{routing number}
 ```
-2. Pass accept header `application/xml` to receive XML, otherwise response defaults to JSON.
+1. Pass accept header `application/xml` to receive XML, otherwise response defaults to JSON.
 ```json
 {
     "countryCode":"CAN",
