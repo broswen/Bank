@@ -40,7 +40,7 @@ module.exports.handler = async (event) => {
 
   const parser = file.Body.pipe(parse({ columns: true }));
 
-  let items: { routingNumber: string, name: string, addressLine1: string, addressLine2: string }[] = [];
+  let items: { routingNumber: string, countryCode: string, name: string, addressLine1: string, addressLine2: string }[] = [];
   let totalItems = 0;
   for await (let item of parser) {
     logger.info("item", item)

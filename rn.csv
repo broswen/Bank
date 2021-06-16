@@ -1,5 +1,5 @@
-routingNumber,name,addressLine1,addressLine2
-000000001,"Test Bank","1234 Main Street","Extra Information"
-000000002,"XYZ Bank","ABC Street","Extra Information"
-000000003,"Snow Bank","South Pole","Extra Information"
-000000004,"Fore Bank","4th Street","Extra Information"
+countryCode,routingNumber,name,addressLine1,addressLine2
+USA,000000001,"Test Bank","1234 Main Street","Extra Information"
+USA,000000002,"XYZ Bank","ABC Street","Extra Information"
+CAN,000000003,"Snow Bank","South Pole","Extra Information"
+CAN,000000004,"Fore Bank","4th Street","Extra Information"

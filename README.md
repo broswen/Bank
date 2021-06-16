@@ -34,4 +34,4 @@ Automated lambda to download and update routing number database monthly.
 - [x] use GET with path params to allow for cacheing
 - [x] log everything, use common logging framework
 - [x] return JSON or XML based on accept header
-- [ ] add country code as path parameter
+- [x] add country code as path parameter

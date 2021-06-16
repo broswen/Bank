@@ -42,7 +42,8 @@ const inputSchema = {
     pathParameters: {
       type: 'object',
       properties: {
-        rn: { type: 'string', minLength: 9, maxLength: 9 }
+        rn: { type: 'string', minLength: 9, maxLength: 9 },
+        cc: { type: 'string', minLength: 3, maxLength: 3 }
       },
       required: ['rn']
     }
@@ -53,7 +54,7 @@ const lookupBank = async (event) => {
 
   let bank: Bank | null
   try {
-    bank = await bankService.getBank(event.pathParameters.rn)
+    bank = await bankService.getBank(event.pathParameters.rn, event.pathParameters.cc)
   } catch (error) {
     logger.error("error getting bank by routing number", error)
     if (error instanceof BankNotFoundError) {

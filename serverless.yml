@@ -54,7 +54,7 @@ functions:
     reservedConcurrency: 10
     events:
       - httpApi:
-          path: /bank/{rn}
+          path: /bank/{cc}/{rn}
           method: get
           authorizer:
             name: ClientAuthorizer
@@ -89,9 +89,13 @@ resources:
         AttributeDefinitions:
           - AttributeName: PK
             AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
         TableName: ${self:service}-${self:provider.stage}-routing-table
         BillingMode: PAY_PER_REQUEST
 

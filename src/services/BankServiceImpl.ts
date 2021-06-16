@@ -12,12 +12,15 @@ export class BankServiceImpl implements BankService {
         this.ddbClient = ddbClient
     }
 
-    async getBank(routingNumber: string): Promise<Bank> {
+    async getBank(routingNumber: string, countryCode: string): Promise<Bank> {
         const params: GetItemCommandInput = {
             TableName: process.env.ROUTING_TABLE,
             Key: {
                 PK: {
                     S: routingNumber
+                },
+                SK: {
+                    S: countryCode
                 }
             }
         }
@@ -34,6 +37,7 @@ export class BankServiceImpl implements BankService {
         }
 
         return {
+            countryCode: data.Item.SK.S,
             routingNumber: data.Item.PK.S,
             name: data.Item.name.S,
             addressLine1: data.Item.address1.S,
@@ -49,6 +53,9 @@ export class BankServiceImpl implements BankService {
             Item: {
                 PK: {
                     S: bank.routingNumber
+                },
+                SK: {
+                    S: bank.countryCode
                 },
                 name: {
                     S: bank.name
@@ -83,6 +90,9 @@ export class BankServiceImpl implements BankService {
                             Item: {
                                 PK: {
                                     S: item.routingNumber
+                                },
+                                SK: {
+                                    S: item.countryCode
                                 },
                                 name: {
                                     S: item.name
