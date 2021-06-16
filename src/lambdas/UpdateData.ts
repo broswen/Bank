@@ -4,9 +4,19 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { BankService } from "../services/BankService";
 import { BankServiceImpl } from "../services/BankServiceImpl";
+const winston = require('winston');
+
+const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console()
+  ]
+})
 
 const bankService: BankService = new BankServiceImpl(new DynamoDBClient({}))
-
 
 const s3Client: S3Client = new S3Client({});
 
@@ -24,7 +34,7 @@ module.exports.handler = async (event) => {
   try {
     file = await s3Client.send(new GetObjectCommand(params));
   } catch (error) {
-    console.error(error);
+    logger.error("error downloading s3 data", error)
     throw error;
   }
 
@@ -33,7 +43,7 @@ module.exports.handler = async (event) => {
   let items: { routingNumber: string, name: string, addressLine1: string, addressLine2: string }[] = [];
   let totalItems = 0;
   for await (let item of parser) {
-    console.log(item);
+    logger.info("item", item)
     items.push(item);
     if (items.length > 9) {
       const saved = await bankService.batchSaveBank(items);
@@ -47,11 +57,11 @@ module.exports.handler = async (event) => {
     try {
       await bankService.batchSaveBank(items);
     } catch (error) {
-      console.error(error)
+      logger.error("error batch saving banks", error)
       throw error
     }
     totalItems += items.length;
   }
-  console.info(`Updated ${totalItems} banks in ${process.env.ROUTING_TABLE}`)
+  logger.info(`Updated ${totalItems} banks in ${process.env.ROUTING_TABLE}`)
   return 'OK';
 };

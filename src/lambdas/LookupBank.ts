@@ -5,10 +5,29 @@ import { Bank } from "../models/Bank";
 import { BankNotFoundError } from "../models/BankNotFoundError";
 import { BankService } from "../services/BankService";
 import { BankServiceImpl } from "../services/BankServiceImpl";
+const winston = require('winston');
+var Parser = require("fast-xml-parser").j2xParser;
+
+var defaultOptions = {
+  format: false,
+  indentBy: "  ",
+  supressEmptyNode: false,
+};
+const xmlParser = new Parser(defaultOptions)
 
 const bankService: BankService = new BankServiceImpl(new DynamoDBClient({}))
 
 const middy = require('@middy/core')
+
+const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console({})
+  ]
+})
 
 
 const jsonBodyParser = require('@middy/http-json-body-parser');
@@ -36,13 +55,20 @@ const lookupBank = async (event) => {
   try {
     bank = await bankService.getBank(event.pathParameters.rn)
   } catch (error) {
-    console.error(error);
-
+    logger.error("error getting bank by routing number", error)
     if (error instanceof BankNotFoundError) {
       throw createError(404)
     }
 
     throw createError(500)
+  }
+
+  if (event.headers.accept == "application/xml") {
+    let xml = xmlParser.parse(bank)
+    return {
+      statusCode: 200,
+      body: xml
+    };
   }
 
   return {
@@ -55,7 +81,7 @@ const logMiddleware = () => {
 
   return {
     before: (handler, next) => {
-      console.log(handler.event);
+      logger.info("querying bank", handler.event)
       return next();
     },
     after: (handler, next) => {

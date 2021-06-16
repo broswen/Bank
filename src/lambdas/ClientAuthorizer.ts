@@ -1,13 +1,25 @@
 'use strict';
 
 import { DynamoDBClient, GetItemCommand, GetItemCommandInput, GetItemCommandOutput } from '@aws-sdk/client-dynamodb';
+const winston = require('winston');
+
+const logger = winston.createLogger({
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.Console()
+    ]
+})
 
 const ddbClient = new DynamoDBClient({});
 
 
 module.exports.handler = async (event) => {
 
-    console.log(event)
+    logger.info("authorizing client", event)
+
 
     if (event.identitySource.length < 1) {
         return generateResponse(event.identitySource, '', false)
@@ -27,7 +39,7 @@ module.exports.handler = async (event) => {
     try {
         data = await ddbClient.send(new GetItemCommand(params))
     } catch (error) {
-        console.error(error)
+        logger.error("error getting client id", error)
         return "Error"
     }
 
@@ -43,7 +55,7 @@ module.exports.handler = async (event) => {
 }
 
 const generateResponse = (identitySource, clientName, allow) => {
-    console.log({
+    logger.info("generating authorization response", {
         time: new Date().toISOString(),
         identitySource: identitySource,
         effect: allow,

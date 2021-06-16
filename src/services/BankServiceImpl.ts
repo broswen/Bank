@@ -69,7 +69,6 @@ export class BankServiceImpl implements BankService {
         } catch (error) {
             throw error
         }
-        console.log(response)
 
         return bank
     }
