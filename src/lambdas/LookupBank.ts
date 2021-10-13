@@ -1,7 +1,7 @@
 'use strict';
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { Bank, BankWrapper } from "../models/Bank";
+import { Bank } from "../models/Bank";
 import { BankNotFoundError } from "../models/BankNotFoundError";
 import { BankService } from "../services/BankService";
 import { BankServiceImpl } from "../services/BankServiceImpl";
