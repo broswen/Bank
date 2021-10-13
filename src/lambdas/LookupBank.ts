@@ -1,7 +1,7 @@
 'use strict';
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { Bank } from "../models/Bank";
+import { Bank, BankWrapper } from "../models/Bank";
 import { BankNotFoundError } from "../models/BankNotFoundError";
 import { BankService } from "../services/BankService";
 import { BankServiceImpl } from "../services/BankServiceImpl";
@@ -42,10 +42,10 @@ const inputSchema = {
     pathParameters: {
       type: 'object',
       properties: {
-        rn: { type: 'string', minLength: 9, maxLength: 9 },
+        rn: { type: 'string', minLength: 1, maxLength: 9 },
         cc: { type: 'string', minLength: 3, maxLength: 3 }
       },
-      required: ['rn']
+      required: ['cc', 'rn']
     }
   }
 }
@@ -65,7 +65,8 @@ const lookupBank = async (event) => {
   }
 
   if (event.headers.accept == "application/xml") {
-    let xml = xmlParser.parse(bank)
+    let bankWrapper: { bank: Bank } = { bank }
+    let xml = xmlParser.parse(bankWrapper)
     return {
       statusCode: 200,
       body: xml
