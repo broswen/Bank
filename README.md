@@ -61,6 +61,6 @@ https://endpoint/{country code}/{routing number}
 - [x] log everything, use common logging framework
 - [x] return JSON or XML based on accept header
 - [x] add country code as path parameter
-- [ ] start import on s3 event
-- [ ] persist s3 event in SQS until successful
-- [ ] separate download and data load lambda
+- [x] start import on s3 event
+- [x] persist s3 event in SQS until successful
+- [x] separate download and data load lambda
