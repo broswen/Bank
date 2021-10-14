@@ -41,9 +41,7 @@ provider:
 
   environment:
     ROUTING_TABLE: !Ref RoutingTable
-    DATA_BUCKET: !Ref DataBucket
     CLIENTSTABLE: !Ref ClientsTable
-    FILE: rn.csv
 
 functions:
   LookupBank:

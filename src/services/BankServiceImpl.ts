@@ -118,7 +118,7 @@ export class BankServiceImpl implements BankService {
         }
 
         let unprocessedItems = 0
-        if (output.UnprocessedItems) {
+        if (output.UnprocessedItems && output.UnprocessedItems[process.env.ROUTING_TABLE]) {
             unprocessedItems = output.UnprocessedItems[process.env.ROUTING_TABLE].length
         }
 
