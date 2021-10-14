@@ -42,11 +42,13 @@ https://endpoint/{country code}/{routing number}
 }
 ```
 ```xml
-<countryCode>CAN</countryCode>
-<routingNumber>000000003</routingNumber>
-<name>Snow Bank</name>
-<addressLine1>South Pole</addressLine1>
-<addressLine2>Extra Information</addressLine2>
+<bank>
+    <countryCode>CAN</countryCode>
+    <routingNumber>000000003</routingNumber>
+    <name>Snow Bank</name>
+    <addressLine1>South Pole</addressLine1>
+    <addressLine2>Extra Information</addressLine2>
+</bank>
 ```
 ### TODO List
 - [x] refactor project file locations
